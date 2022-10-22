@@ -1,3 +1,9 @@
+# prep work
+/prep-material/
+
+# DS_Store
+.DS_Store
+
 # History files
 .Rhistory
 .Rapp.history
@@ -19,6 +25,7 @@
 
 # RStudio files
 .Rproj.user/
+*.Rproj
 
 # produced vignettes
 vignettes/*.html
