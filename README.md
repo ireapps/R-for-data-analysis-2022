@@ -5,7 +5,7 @@
 **Goals**: See some examples of what R can do, get familiar with RStudio, learn how to set up a project and run code, learn how the tidyverse packages work.
 
 **Resources**:  
--   [Introduction to R and RStudio](Introduction-to-R-and-RStudio.html)
+-   [Introduction to R and RStudio](Introduction-to-R-and-RStudio.html) (best to download this and open it in a browser)
 
 **Reference Scripts**:
 -   [My First Notebook!](scripts/my-first-notebook.Rmd)
