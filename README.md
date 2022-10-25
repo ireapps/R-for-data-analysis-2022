@@ -4,6 +4,10 @@
 ## Day 1
 **Goals**: See some examples of what R can do, get familiar with RStudio, learn how to set up a project and run code, learn how the tidyverse packages work.
 
+**Story Examples**:
+-   Texas winter storm excess deaths [story](https://www.buzzfeednews.com/article/peteraldhous/texas-winter-storm-power-outage-death-toll), [analysis](https://buzzfeednews.github.io/2021-05-tx-winter-storm-deaths/)
+-   Mapping Sinclair TV stations [story](https://www.washingtonpost.com/graphics/2018/lifestyle/sinclair-broadcasting/), [analysis](https://r-journalism.com/posts/2018-07-17-sf-sinclair-map/map/)
+
 **Resources**:  
 -   [Introduction to R and RStudio](Introduction-to-R-and-RStudio.html) (best to download this and open it in a browser)
 
