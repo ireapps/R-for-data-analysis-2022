@@ -16,6 +16,7 @@ Refer to [R-Functions.md](docs/R-Functions.md) for an explanation of these funct
 Here's we'll put these functions into practice using the same poverty data from the last session. If you need to reload it, run this code again:
 
 ```{r}
+library(tidyverse)
 poverty <- read_csv("data/poverty.csv")
 ```
 
