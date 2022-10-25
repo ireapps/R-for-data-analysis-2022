@@ -1,0 +1,124 @@
+---
+title: "My First Notebook"
+output: html_notebook
+---
+
+Here in the whitespace of your notebook, you can type anything you want. You can also stylize the text using "markdown", a kind of lightweight markup language for formatting text.
+
+Here is a [cheat sheet for R Markdown](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf).
+
+If you're in the Source tab of R Notebook, you can see how the notation above creates a link. Flip over to the Visual side of R Notebook to see it rendered. You can work in either mode. Visual comes with some formatting buttons on the toolbar near the top.
+
+Create your first code chunk using the green c button above or the keyboard shortcut (`cmd option i` on macs and `ctrl alt i` on windows).
+
+In it, type `1 + 1`, then run that line of code with `cmd return` (macs) or `ctrl enter` (windows).
+
+```{r}
+1 + 1
+```
+
+Congratulations, how you know how to use R as a calculator. Notice that when you run the code the results show up below the code chunk. The code and the results also show up below in the Console (below your script window). Having results show up in your script (below the code chunk) is one of the more useful aspects of notebook files. You'll see why when we start analyzing data.
+
+Create another code chunk, and in it type `a <- 1`, then run that code. (You can also run all the code in a code chunk by hitting `cmd/ctrl shift enter` or clicking the green "play" button in the upper righthand corner).
+
+```{r}
+a <- 1
+```
+
+What you did there was assign the value 1 to the variable `a`. The `<-` character is the assignment operator; use it when you want to create variables, or containers, to store values (or lists, vectors, data tables, etc). Variables (containers) take on properties depending on what you put in them. For example, type `class(a)` in a code chunk below:
+
+```{r}
+class(a)
+```
+
+The results say "numeric" because 1 is a number. In a new code chunk, type `b <- "apples"` and in the next line type `class(b)`. Then run both lines.
+
+```{r}
+b <- "apples"
+class(b)
+```
+
+R returns "character" because "apples" is a `string`, or text. Text must always be in double quotes, unlike numbers. You can add numbers but you can't add text.
+
+If you haven't noticed, look over at the upper right quadrant; you should see two things under a "Values" header: `a` and `b`. We stored values in these variables, so they're showing up in our environment. This is also where we'll store data.
+
+Before we get to that, let's talk functions. These are the building blocks of our code; there are thousands of functions in base R, but also many many additional functions that we can use if we add `packages`. We'll talk more about packages later, let's start with some functions in base R.
+
+First, we'll start off creating a variable that contains a series of numbers: every number between (and including) 10 and 20
+
+```{r}
+a <- 10:20
+```
+
+Next, we can apply a whole bunch of math functions to that range of numbers:
+
+```{r}
+sum(a)
+mean(a)
+min(a)
+max(a)
+range(a)
+```
+
+Imagine, you can use these functions on columns in your dataset. We'll get to that shortly.
+
+Every function takes *argument(s)*, the thing(s) that go inside the parentheses. For the `sum()` function, you just give it the numbers (or variables) you want to sum. You can explore what a function wants by using the ? before the function name:
+
+```{r}
+?sum
+```
+
+The documentation appears in your bottom right quadrant: `sum(..., na.rm = FALSE)` The `...` stand for `numeric or complex or logical vectors`. In the example above, a is numeric (specifically, integer) vector:
+
+```{r}
+class(a)
+```
+
+You can always use ?*function_name* to figure out what kinds of arguments a function takes.
+
+Now, let's get our hands on some real data. To do that, we're going to need some functions from the Tidyverse. Assuming you have already installed it (which you only need to do once on your computer), you can bring those functions into this script with the `library()` function:
+```{r}
+library(tidyverse)
+```
+
+Paste the code in the next code chunk into your own notebook (provided you are in your bootcamp project folder). A note about the data: it comes from the Census Bureau's [American Community Survey, table S1701](https://data.census.gov/cedsci/table?q=Poverty&tid=ACSST1Y2021.S1701).
+
+```{r}
+poverty <- read_csv("data/poverty.csv")
+```
+
+We'll go through the details of this code tomorrow. Let's just get a feel for how data analysis works in notebooks. Start by inspecting our new variable, `poverty`:
+
+```{r}
+class(poverty)
+```
+
+It's a table and a data frame. It has the characteristics of both in R, which tells us what we can do with it: it's structured data. We can use the summary function:
+
+```{r}
+summary(poverty)
+```
+
+This gives us some summary information about each column, which isn't super useful for this data. 
+
+```{r}
+glimpse(poverty)
+```
+This gives us another view into our data, and tells us what data type each column is. Note the `$` character before each column name. This is a reminder that you can pull a column of data out of your table using the `$`: 
+```{r}
+poverty$population
+class(poverty$population)
+```
+Note that the results are a vector of numbers. We can feed that into a sum function.
+
+Sum the population column:
+
+```{r}
+sum(poverty$population)
+```
+
+This is roughly the population of the United States.
+
+We can sort, filter, group and summarize our data, add columns, do calculations, all the things we would do in spreadsheets or SQL (with a bit more power and ease). To do that, we'll start using a set of `packages` known as the [Tidyverse](https://www.tidyverse.org/).
+
+Go to [intro-to-tidyverse.Rmd](scripts/intro-to-tidyverse.Rmd)
