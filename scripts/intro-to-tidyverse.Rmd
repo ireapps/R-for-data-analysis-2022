@@ -1,0 +1,119 @@
+---
+title: "Introduction to the Tidyverse"
+output: html_notebook
+---
+
+The main functions of the tidyverse that we're going to cover tomorrow are these:
+
+-   select()
+-   filter()
+-   arrange()
+-   group_by()
+-   summarise()
+
+Refer to [R-Functions.md](docs/R-Functions.md) for an explanation of these functions and examples.
+
+Here's we'll put these functions into practice using the same poverty data from the last session. If you need to reload it, run this code again:
+
+```{r}
+poverty <- read_csv("data/poverty.csv")
+```
+
+Our goal here is to demo the functions mentioned above, so you get a sense for what each one does. We won't explore their full capability here, just a brief demonstration.
+
+An important note: the tidyverse works with a *pipe* which is this character `%>%`. It does what it sounds like: it sends the results of one function into the next. When asking questions of data, always start with the variable name that holds your dataset and pipe it into the function(s) that help you answer your question.
+
+### select()
+
+Use `select()` to choose only particular columns from your data table, or to exclude columns in your results:
+
+```{r}
+poverty %>% select(state, county, population, below150)
+```
+
+Use the negative sign to exclude columns:
+
+```{r}
+poverty %>% select(-below50, -below125)
+```
+
+### filter()
+
+Use `filter()` to subset records from your data table, such as all the counties in a single state. For example, if you only want to see counties in California:
+
+```{r}
+poverty %>% filter(state=="California")
+```
+
+Note the double equals sign, which is how R tests for sameness (whereas one equals sign assigns something to a variable, or container).
+
+You can specify multiple criteria in your filter, separated by `&` (and) or `|` (or):
+
+```{r}
+poverty %>% filter(state=="California" & population > 1000000)
+```
+
+```{r}
+poverty %>% filter(state=="California" | state=="Oregon" | state=="Washington")
+# or...
+poverty %>% filter(state %in% c("California", "Oregon", "Washington"))
+```
+
+### arrange()
+Use `arrange()` to sort your data. 
+```{r}
+poverty %>% arrange(population)
+```
+
+The default is ascending, so to switch to descending, use the function `desc()` like this:
+```{r}
+poverty %>% arrange(desc(population))
+```
+
+You can do a multi-level sort:
+```{r}
+poverty %>% arrange(state, desc(population))
+```
+
+### summarise()
+Use summarise() to apply summary functions to a column in your data. Note that since the tidyverse was primarily written by a New Zealander you'll often see summarise spelled with an s, but you can also spell it with a z. 
+
+To sum up the population using the tidyverse convention of piping, you need to put the `sum()` function inside the `summarise()` function:
+```{r}
+poverty %>% summarise(total_pop = sum(population))
+```
+
+This is slightly more typing than the way we used earlier, but piping allows you to string functions together: 
+```{r}
+poverty %>% filter(state=="California") %>% summarise(total_pop = sum(population))
+```
+
+Within `summarise()` you can apply any number of summary functions. What is the average population of counties in the US? 
+```{r}
+poverty %>% summarise(avg_pop = mean(population))
+```
+
+What about just for California (or pick another state and swap out the name in the filter):
+```{r}
+poverty %>% filter(state=="California") %>% summarise(avg_pop = mean(population))
+```
+See [R-Functions.md](docs/R-Functions.md) for some other summary functions you can use. 
+
+### group_by()
+Use `group_by()` to apply summary functions to groups rather than the whole (or filtered) dataset. 
+
+`group_by()` puts your rows into groups based on the values in some column, whatever you specify within the function. So if you want to group all the rows by state and add up the population for each: 
+```{r}
+poverty %>% 
+  group_by(state) %>% 
+  summarise(total_pop = sum(population))
+```
+
+Add the `arrange()` function to sort by total population:
+```{r}
+poverty %>% 
+  group_by(state) %>% 
+  summarise(total_pop = sum(population)) %>% 
+  arrange(desc(total_pop))
+```
+Note: because you named the result of sum(population) "total_pop", you can feed that into the `arrange()` function. If you hadn't named it, you could not sort by that column. 
