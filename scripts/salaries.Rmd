@@ -1,0 +1,65 @@
+---
+title: "Salaries"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(readxl)
+```
+
+Load data
+```{r}
+salaries <- read_excel("data/salaries.xlsx", sheet=1)
+```
+
+Run integrity checks on columns in your data
+
+Use the `count()` function to look for misspellings and inconsistencies (and also to see which values are most common)
+```{r}
+salaries %>% count(department)
+```
+
+These two lines of code produce exactly the same results.
+```{r}
+salaries %>% count(job_title)
+salaries %>% group_by(job_title) %>% summarise(n = n())
+```
+
+Which employee made the most amount of money (hint: total compensation)? 
+```{r}
+salaries %>% arrange(desc(total_comp))
+```
+
+What is the total compensation paid out by the city in 2021? 
+```{r}
+salaries %>% summarise(overtime = sum(overtime_oncall, na.rm=TRUE))
+```
+
+Which department paid out the most in overtime pay? 
+```{r}
+salaries %>% 
+  group_by(department) %>% 
+  summarise(overtime = sum(overtime_oncall, na.rm=TRUE)) %>% 
+  arrange(desc(overtime))
+```
+
+Which job title received the most in overtime pay? 
+```{r}
+salaries %>% 
+  group_by(job_title) %>% 
+  summarise(OT = sum(overtime_oncall, na.rm=T)) %>% 
+  arrange(desc(OT))
+```
+
+Explore which Senior Police Officers are getting the most overtime:
+```{r}
+salaries %>% filter(job_title=="Senior Police Officer") %>% 
+  arrange(desc(overtime_oncall))
+```
+
+What's the most common first name? 
+```{r}
+salaries %>% count(first_name) %>% arrange(desc(n))
+```
+

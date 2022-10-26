@@ -1,6 +1,8 @@
 ---
 title: "My First Notebook"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 Here in the whitespace of your notebook, you can type anything you want. You can also stylize the text using "markdown", a kind of lightweight markup language for formatting text.
@@ -104,9 +106,9 @@ This gives us some summary information about each column, which isn't super usef
 ```{r}
 glimpse(poverty)
 ```
-This gives us another view into our data, and tells us what data type each column is. Note the `$` character before each column name. This is a reminder that you can pull a column of data out of your table using the `$`: 
+This gives us another view into our data, and tells us what data type each column is. Note the `$` character before each column name. This is a reminder that you can pull a column of data out of your table using the `$`. (I'm also using `head()` here so we only see the first five values): 
 ```{r}
-poverty$population
+head(poverty$population)
 class(poverty$population)
 ```
 Note that the results are a vector of numbers. We can feed that into a sum function.

@@ -1,0 +1,143 @@
+---
+title: "Importing, sorting, and filtering"
+output:
+  html_document:
+    df_print: paged
+---
+
+As a reminder, always add your packages at the top of your script
+
+```{r setup}
+library(tidyverse)
+```
+
+### Importing
+
+Before we import data, let's explore the options associated with `read_csv()` by looking at the docs. Note that you can pop open the documents as a separate window with this button: ![](images/Screen%20Shot%202022-10-25%20at%204.09.58%20PM.png){width="30"}
+
+```{r}
+?read_csv
+```
+
+Note that there are a group of functions that show up, including read_tsv and read_delim. These are functions you can use for files with different formatting: tsv imports a tab-delimited file, and read_delim allows you to specify another delimiter.
+
+You can also include optional arguments to:
+
+-   specify column names (if your file doesn't have them) `col_names = c("name1", "name2", "name3")`
+-   specify data types for each column `col_types = "nnnnnccccc"` (five numeric columns followed by five character columns)
+-   import everything as character `col_types = cols(.default = "c")`
+-   skip rows if your file has extra header rows `skip = 2`
+
+We'll talk about importing excel files in the next exercise.
+
+For this exercise we'll be working with the poverty data from yesterday and some MLB salaries data.
+
+```{r}
+poverty <- read_csv("data/poverty.csv")
+mlb <- read_csv("data/mlb.csv")
+```
+
+**poverty**: comes from American Community Survey 5-year data from 2020, and measures the population at various levels of poverty, broken out by county. The Census Bureau defines poverty thresholds somewhat differently than HHS which determines eligibility for federal programs, and also has supplemental poverty measures that are different than the primary thresholds, which for 2020 are as such:
+
+![](images/Screen%20Shot%202022-10-25%20at%205.28.17%20PM.png){width="900"}
+
+**mlb**: from 2021, the starting salary of every major league baseball player, courtesy of USA Today. Excludes bonuses. Note that the position field is coded:
+
+-   1B = first base
+-   2B = second base
+-   3B = third base
+-   C = catcher
+-   OF = outfield
+-   INF = infield
+-   SS = shortstop
+-   SP = staring pitcher
+-   RP = relief pitcher
+-   DH = designated hitter
+
+### Sorting and filtering
+
+`arrange()` is used to re-order your data.
+
+`filter()` is used to subset your data, based on criteria you set inside the function
+
+Q: which major league baseball player makes the most money?
+
+```{r}
+
+```
+
+Q: which starting pitcher makes the most?
+
+```{r}
+
+```
+
+Q: who is the best paid player on your favorite team?
+
+```{r}
+
+```
+
+Q: How many players make over \$1M? \$10M?
+
+```{r}
+
+```
+
+Q: How many players make the league minimum?
+
+```{r}
+
+```
+
+Q: How many pitchers are there?
+
+```{r}
+
+```
+
+### Creating new columns
+
+As we noted yesterday, to do fair comparisons of populations in poverty we need to create percentages or rates rather than comparing raw numbers. To do this, we'll need to create calculated columns in our **poverty** dataset using the `mutate()` function:
+
+```{r}
+poverty %>% 
+  mutate(pct_below200 = below200/population) %>%
+  select(population, below200, pct_below200)
+```
+
+First make sure that your calculations looks correct, and then we'll finalize the results by re-writing the `poverty` variable:
+
+```{r}
+poverty <- poverty %>% mutate(pct_below200 = below200/population)
+```
+
+Q: which county has the highest percentage of people living below 200% of the poverty level?
+
+```{r}
+poverty %>% arrange(desc(pct_below200)) %>% 
+  select(state, county, pct_below200)
+```
+
+Q: How many counties have at least 50% of residents living below 200% of the poverty threshold?
+
+```{r}
+poverty %>% filter(pct_below200 >= .5)
+```
+
+### Summarizing
+Use `summarise()` to reduce multiple values down to a single summary
+
+Q: What is the national pct of people who live below 200 pct of the poverty level? 
+```{r}
+poverty %>% 
+  summarise(sum(below200)/sum(population))
+```
+
+Q: What pct of people in your state live below 200 pct of the poverty level? 
+```{r}
+poverty %>% 
+  filter(state=="") %>% 
+  summarise(sum(below200)/sum(population))
+```
+
