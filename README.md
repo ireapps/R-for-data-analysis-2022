@@ -12,25 +12,25 @@
 -   [Introduction to R and RStudio](Introduction-to-R-and-RStudio.html) (best to download this and open it in a browser)
 
 **Reference Scripts**:
--   [My First Notebook!](scripts/my-first-notebook.Rmd)
--   [Intro to the Tidyverse](scripts/intro-to-tidyverse.Rmd)
+-   [My First Notebook!](scripts/my-first-notebook.html)
+-   [Intro to the Tidyverse](scripts/intro-to-tidyverse.html)
 
 ## Day 2
 **Goals**: Wrangle that data! We’ll import a csv and an excel file, and walk through the fundamentals: sorting, filtering, grouping, summarizing.
 
 **Resources**:  
--   [R Functions tipsheet](docs/R-Functions.md)
+-   [R Functions tipsheet](docs/R-Functions.html)
 -   [Dplyr cheat sheet](docs/data-transformation.pdf)
 
 **Reference Scripts**:
--   [Importing, sorting and filtering]()
--   [Grouping and summarizing]()
+-   [Importing](scripts/importing.html)
+-   [Sorting, filtering, and summarizing](sorting-filtering-summarizing.html)
 
 ## Day 3
 **Goals**: Joining. Learn how to work with multiple tables. Reinforce main analysis functions from Day 2.
 
 **Resources**: 
--   [Slides about different kinds of joins]()
+-   [Slides about different kinds of joins](https://docs.google.com/presentation/d/1QrOmy7QIxlBP1DF-ltC33I9VkQ5PJyu6nfyWGC6Qb64/edit?usp=sharing)
  
 **Reference Scripts**:
 -	[Joining tables]()
@@ -40,9 +40,9 @@
 
 
 **Resources**:  
--   [Tidyr cheat sheet]()
--   [Stringr cheat sheet]()
--	[Lubridate cheat sheet]()
+-   [Tidyr cheat sheet](docs/tidyr.pdf)
+-   [Stringr cheat sheet](docs/strings.pdf)
+-	[Lubridate cheat sheet](docs/lubridate.pdf)
 
 **Reference Scripts**:
 -   [Cleaning dirty data]()
