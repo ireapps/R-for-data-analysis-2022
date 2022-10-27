@@ -1,6 +1,8 @@
 ---
-title: "Salaries"
-output: html_notebook
+title: "Group by (salaries)"
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r}
@@ -36,7 +38,8 @@ What is the total compensation paid out by the city in 2021?
 salaries %>% summarise(overtime = sum(overtime_oncall, na.rm=TRUE))
 ```
 
-Which department paid out the most in overtime pay? 
+Which department paid out the most in overtime pay?
+If you want to compare departments, you need to use the `group_by()`. The `summarise()` function will then operate on the groups rather than the whole dataset:
 ```{r}
 salaries %>% 
   group_by(department) %>% 
