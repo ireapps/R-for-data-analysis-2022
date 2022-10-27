@@ -1,0 +1,49 @@
+---
+title: "grep - searching for words"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library(tidyverse)
+```
+
+Load the data
+```{r}
+osha <- read_csv("data/osha.csv")
+```
+
+Searching for keywords inside of columns:
+such as "farming" or "fish" in industry_description.
+```{r}
+osha %>% filter(grepl("farming",industry_description)) %>% 
+  count(industry_description)
+```
+
+Remember that R is case sensitive, and that's true here as well. But `grepl()` comes with an argument that ignores case: 
+```{r}
+osha %>% filter(grepl("farming",industry_description, ignore.case=TRUE)) %>% 
+  count(industry_description)
+```
+
+Now try "fish":
+```{r}
+osha %>% filter(grepl("fish",industry_description, ignore.case=TRUE)) %>% 
+  count(industry_description)
+```
+```{r}
+?grep
+```
+
+The `grepl()` function is in a family of `grep` functions that allow you to search for strings (as above) or patters. In order to search for patterns you need to learn "regular expressions", which is a whole other class. But you can use `grep()` and `grepl()` to search for keywords in a text column. `grepl()` returns TRUE or FALSE depending on whether the text matches, and `grep()` returns an index of the values that match:
+
+```{r}
+a <- c("wheat farming", "soybean farming", "alfalfa farming", "cod fishing", "salmon fishing")
+```
+
+```{r}
+grep("farm", a)
+grepl("farm",a)
+```
+

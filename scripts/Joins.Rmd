@@ -1,0 +1,138 @@
+---
+title: "Joins!"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+Load necessary packages
+```{r}
+library(tidyverse)
+```
+
+Load the data!
+```{r}
+transactions <- read_csv("data/campfin/transactions.csv")
+transaction_types <- read_csv("data/campfin/transaction_types.csv")
+candidates <- read_csv("data/campfin/candidates.csv")
+committees <- read_csv("data/campfin/committees.csv")
+```
+
+### Introduction to the data
+
+Each candidate for federal office (U.S. House of Representatives, U.S. Senate, President) must register with the Federal Election Commission (FEC) and form a Political Action Committee (PAC) to receive contributions. Candidates can have several different kinds of PACs, but everyone has a "principal campaign committee" through which they receive money.
+
+It's an election year: every Representative is up for re-election in an even year, since Reps serve 2-year terms. One third of the Senate is up for re-election every two years because Sens serve 6-year terms. Candidates can receive money even if they're not running for re-election, but though there are limits to how much any entity can give directly to a candidate. There are no limits for receiving or spending money as independent expenditures, which support or oppose a candidate but don't coordinate with that candidate.
+
+Missouri has 8 House seats and 2 Senate seats; only 1 Senate seat is up for re-election in 2022; Roy Blunt is not running for re-election so it's an open seat. Josh Hawley won't be up for re-election until 2024; however senators are always raising money whether they're up for re-election in the current cycle or not.
+
+### Documentation for the data
+
+-   [Committee donations & independent expenditures](https://www.fec.gov/campaign-finance-data/contributions-committees-candidates-file-description/)
+-   [Candidates](https://www.fec.gov/campaign-finance-data/candidate-master-file-description/)
+-   [Committees](https://www.fec.gov/campaign-finance-data/committee-master-file-description/)
+
+
+### Explore the data
+
+Start by looking at the different transaction types in this dataset (which is a slice of the main data, which is huge). Transaction types tell you exactly what you're looking at in FEC data:
+
+```{r}
+transactions %>% count(transaction_tp)
+```
+
+There are only a handful of transaction types in here: what are they? To find out, we could look them up in the `transaction_types` table, or we could bring in the `transaction_desc` field from that table, using a join.
+
+Which type of join? We don't care about all the transaction types in that table, only the transaction types that are in our main table. So we'll use a **left_join** (returns every row from table x and only matches from table y). The shared column in these two tables is `transaction_tp`.
+
+```{r}
+transactions %>% 
+  count(transaction_tp) %>%
+  left_join(transaction_types, by="transaction_tp")
+```
+
+
+Most of these transactions are "Contributions made to nonaffiliated committees", which basically means PACs that are run by companies, labor unions, and special interest groups giving money to candidate committees. There are some independent expenditures in here as well.
+
+Next look at which candidates are included in this dataset. I said it was a slice of the main data; I only included money going to certain candidates. The `transactions` table has a cand_id, an id that is unique for each candidate running for office. But we can't tell who the person is by looking at the id, so we need to join to the `candidates` table.
+
+Which type of join? Let's start with the candidates table and see which candidates match the cand_ids in our `transactions` table. We don't yet care about the information in transactions, so we'll use a semi_join:
+
+```{r}
+candidates %>% semi_join(transactions, by="cand_id")
+```
+
+35 candidates are in our data. What characterizes them?
+
+```{r}
+# Which states are they running in?
+candidates %>% 
+  semi_join(transactions, by="cand_id") %>% 
+  count(office_st)
+
+# How many are vying for the House vs the Senate?
+candidates %>% 
+  semi_join(transactions, by="cand_id") %>% 
+  count(office)
+
+# How many in each party?
+candidates %>% 
+  semi_join(transactions, by="cand_id") %>% 
+  count(party)
+
+```
+
+One final note about the data: the `name` column in the transactions table points to different entities depending on the transaction type. For independent expenditures (24A and 24E), the `name` is the vendor who received the money for the ad or whatever the committee spent money on to support or oppose a candidate. For the other committee contributions (24K) the `name` is the committee that received the money. For in-kind contributions (24Z) it can be the candidate receiving the item (things that have monetary value but are not actual money), or it might be another entity receiving the item.
+
+Now: explore the data! Answer these questions or come up with your own.
+
+Which committees are spending the most in independent expenditures? 
+(reminder: 24A & 24E)
+```{r}
+transactions %>% 
+  filter(transaction_tp %in% c("24A", "24E")) %>% 
+  group_by(cmte_id) %>% 
+  summarise(total = sum(transaction_amt)) %>% 
+  arrange(desc(total)) %>% 
+  left_join(committees, by="cmte_id") %>% 
+  select(cmte_nm, total)
+```
+
+Which candidate is benefitting the most from i.e. money? 
+```{r}
+transactions %>% 
+  left_join(candidates, by="cand_id") %>% 
+  filter(transaction_tp=="24E") %>% 
+  group_by(cand_name, party, office) %>% 
+  summarise(total = sum(transaction_amt)) %>% 
+  arrange(desc(total))
+```
+
+Which candidate has had the most money spent against them? 
+```{r}
+transactions %>% 
+  left_join(candidates, by="cand_id") %>% 
+  filter(transaction_tp=="24A") %>% 
+  group_by(cand_name, party, office) %>% 
+  summarise(total = sum(transaction_amt)) %>% 
+  arrange(desc(total))
+```
+Which committees are giving the most money to Missouri candidates (hint: 24K)
+```{r}
+transactions %>%
+  left_join(committees, by="cmte_id") %>%
+  filter(transaction_tp=="24K") %>%
+  group_by(cmte_nm) %>%
+  summarise(total = sum(transaction_amt)) %>%
+  arrange(desc(total))
+```
+
+Are there any Missouri candidates that have received no money?
+```{r}
+candidates %>% 
+  anti_join(transactions, by="cand_id") %>% 
+  filter(office_st=="MO" & election_yr==2022)
+```
+
