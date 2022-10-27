@@ -1,0 +1,107 @@
+---
+title: "Importing"
+output:
+  html_document:
+    df_print: paged
+---
+
+As a reminder, always add your packages at the top of your script. We'll use the `readxl` package to import an .xlsx file, and `janitor` to clean up some column names.
+
+```{r setup}
+library(tidyverse)
+library(readxl)
+library(janitor)
+```
+
+### Importing flat text files
+
+Before we import data, let's explore the options associated with `read_csv()` by looking at the docs. Note that you can pop open the documents as a separate window with this button: ![](images/Screen%20Shot%202022-10-25%20at%204.09.58%20PM.png){width="30"}
+
+```{r}
+?read_csv
+```
+
+Note that there are a group of functions that show up, including read_tsv and read_delim. These are functions you can use for files with different formatting: tsv imports a tab-delimited file, and read_delim allows you to specify another delimiter.
+
+You can also include optional arguments to:
+
+-   specify column names (if your file doesn't have them) `col_names = c("name1", "name2", "name3")`
+-   specify data types for each column `col_types = "nnnnnccccc"` (five numeric columns followed by five character columns)
+-   import everything as character `col_types = cols(.default = "c")`
+-   skip rows if your file has extra header rows `skip = 2`
+
+To illustrate some of these options, we'll use a file from the Columbia, MO city website on vendor payments:
+
+```{r}
+data <- read_csv("data/ledger-data-all-years.csv")
+glimpse(data)
+```
+
+Note that this file has a header row, although some of the names aren't very tidy (two have a space, and one has an odd character, a `#`. R will allow these to be column names but you need to put them between \` marks for R to recognize them as such).
+
+If we use the `col_names` argument to say that this file does not have a header row, it will regard the first row as a row of data:
+
+```{r}
+data <- read_csv("data/ledger-data-all-years.csv", col_names=FALSE)
+glimpse(data)
+```
+
+If we use `col_names` to specify a new set of column names, it will also assume the file does not have a header row:
+
+```{r}
+data <- read_csv("data/ledger-data-all-years.csv", col_names=c("col1", "col2", "col3", "col4", "col5", "col6"))
+glimpse(data)
+```
+
+Let's talk data types. There's one column in here I might want to change: the Check \# column. It's not a true number (I wouldn't want to do math on it) so I might want to import it as a character field. Use `col_types` to specify one character type for each column. See the documentation for the different data types:
+
+-   c = character
+-   i = integer
+-   n = number
+-   d = double
+-   l = logical
+-   f = factor
+-   D = date
+-   T = date time
+-   t = time
+-   ? = guess
+-   \_ or - = skip
+
+For this file, I want four character columns, one date time column and one number column, in that order:
+```{r}
+data <- read_csv("data/ledger-data-all-years.csv", col_types="ccccTn")
+glimpse(data)
+```
+
+Alternately, I could import everthing as character. Sometimes this is the easiest way to import really dirty data, and then you can clean things up and convert columns to dates and numbers as you see fit: 
+```{r}
+data <- read_csv("data/ledger-data-all-years.csv", col_types = cols(.default = "c"))
+glimpse(data)
+```
+
+To change just one column type, enter `?` for the rest of the columns (this tells R to guess, which it's good at):
+```{r}
+data <- read_csv("data/ledger-data-all-years.csv", col_types = "???c??")
+glimpse(data)
+```
+
+Or use `cols` if you don't want to type a bunch of question marks:
+```{r}
+data <- read_csv("data/ledger-data-all-years.csv", col_types = cols(`Check #` = "c"))
+glimpse(data)
+```
+
+To clean up the names (i.e. remove spaces and weird characters), use `clean_names()` from the `janitor` package:
+```{r}
+data <- clean_names(data)
+glimpse(data)
+```
+
+### Importing excel files
+
+This is relatively straightforward, and primarily we use the function `read_excel()` to import .xlsx or .xls files. This function has very similar arguments to `read_csv()`, and you can use the col_names and col_types arguments in the same way. With `read_excel()`, you can also specify what sheet in an excel workbook you want to import. In our example, `salaries.xlsx`, the first sheet is the data and the second is a notes tab, so we'll just import the first: 
+```{r}
+salaries <- read_excel("data/salaries.xlsx", sheet=1)
+```
+
+Note that you can import many different types of files to R, using several different packages. These are just the most commonly used by journalists. You just have to find the right function and the right package for what you need. Check out the `foreign` package, for example, which is great at helping you import large survey files of various types. 
